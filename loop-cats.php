@@ -1,3 +1,4 @@
+<?php //modified from loop.php ?>
 <?php if ( ! have_posts() ) : ?>
 	<div id="post-0" class="post error404 not-found">
 		<h1 class="entry-title"><?php _e( 'Not Found', 'imbalance2' ); ?></h1>
@@ -10,28 +11,38 @@
 
 <?php $imbalance2_theme_options = get_option('imbalance2_theme_options') ?>
 
+<style type="text/css">
+
+	.catcontent p:first-child {
+		display:none;
+	}
+
+</style>
+
 <div id="boxes">
-<?php while ( have_posts() ) : the_post(); ?>
+<?php foreach(get_all_category_ids() as $cat_id): ?>
+	<?php query_posts("category_id=$cat_id&posts_per_page=1"); ?>
+	<?php $c = get_category( $cat_id ); ?>
+	<?php //print_r($c); ?>
+	<?php while ( have_posts() ) : the_post(); ?>
 
-	<div class="box">
-		<div class="rel">
-			<div class="categories"><?php imbalance2_posted_in(); ?></div>
-			<h1><?php the_content(); ?></h1>
-			<!-- shown on hover -->
-			<div class="texts">
-				<div class="abs">
-				<a href="<?php the_permalink(); ?>">
-					<?php the_post_thumbnail('homepage-thumb', array('alt' => '', 'title' => '')) ?>
-				</a>
-				<div class="categories"><?php imbalance2_posted_in(); ?></div>
-				<h1><?php the_content(); ?></h1>
+		<div class="box" class="category">
+			<div class="rel">
+				<h1><a href="<?php echo get_category_link($cat_id); ?>" class="catcontent"><?php echo $c->name ?></a></h1>
+				<div class="catcontent"><?php the_content(); ?></div>
+				<!-- shown on hover -->
+				<div class="texts">
+					<div class="abs">
+						<h1><a href="<?php echo get_category_link($cat_id); ?>" class="catcontent"><?php echo $c->name ?></a></h1>
+						<div class="catcontent"><?php the_content(); ?></div>
+					</div>
 				</div>
+				<!-- end shown on hover -->
 			</div>
-			<!-- end shown on hover -->
 		</div>
-	</div>
 
-<?php endwhile; ?>
+	<?php endwhile; ?>
+<?php endforeach; ?>
 </div>
 
 <?php if ( $wp_query->max_num_pages > 1 ) :
